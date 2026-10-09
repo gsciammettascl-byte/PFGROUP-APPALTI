@@ -1099,6 +1099,25 @@ function espCal(){
   document.getElementById('waO').classList.add('op');
 }
 rndrAGSt();rndrAG();
+
+// Carica stati UC dal Google Sheet all'avvio (sincronizza con Valy)
+function ldUCStati(){
+  api({action:'getUCStati'}).then(function(r){
+    if(r.ok && r.stati){
+      FL.forEach(function(f){
+        var s=r.stati[f.codice];
+        if(s){
+          f.stato=s.stato||'nessuno';
+          if(s.storico && s.storico.length>0) f.storico_consegne=s.storico;
+        }
+      });
+      rndrUCSt();rndrUC();
+    }
+  }).catch(function(){});
+}
+ldUCStati();
+// Ricarica dal Sheet ogni 60 secondi per rimanere sincronizzato
+setInterval(ldUCStati, 60000);
 </script>
 </body>
 </html>
